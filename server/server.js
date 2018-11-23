@@ -10,10 +10,21 @@ const app = express();
 mongoose.Promise = global.Promise;
 mongoose.connect(process.env.DATABASE);
 
+// Models
+const { User } = require('./models/user');
+
 // Middleware 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(cookieParser());
+
+
+//
+// USERS
+//
+app.post('/api/users/register', (req, res) => {
+  res.status(200);
+})
 
 
 
