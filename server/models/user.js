@@ -4,7 +4,7 @@ const SALT_I = 10;
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
-const userScheema = mongoose.Schema({
+const userSchema = mongoose.Schema({
   email: {
     type: String,
     required: true,
@@ -43,7 +43,7 @@ const userScheema = mongoose.Schema({
   }
 });
 
-userScheema.pre('save', function(next){
+userSchema.pre('save', function(next){
   const user = this;
 
   if(user.isModified('password')) {
@@ -62,14 +62,14 @@ userScheema.pre('save', function(next){
   } 
 })
 
-userScheema.methods.comparePassword = function(candidatePassword, cb) {
+userSchema.methods.comparePassword = function(candidatePassword, cb) {
   bcrypt.compare(candidatePassword, this.password, function(err, isMatch){
     if(err) return cb(err);
     cb(null, isMatch);
   })
 }
 
-userScheema.methods.generateToken = function(cb) {
+userSchema.methods.generateToken = function(cb) {
   var user = this;
   console.log(user);
   var token = jwt.sign(user._id.toHexString(), process.env.SECRET);
@@ -81,7 +81,7 @@ userScheema.methods.generateToken = function(cb) {
   })
 }
 
-userScheema.statics.findByToken = function(token, cb) {
+userSchema.statics.findByToken = function(token, cb) {
   var user = this;
   
   jwt.verify(token, process.env.SECRET, function(err, decode){
@@ -92,6 +92,6 @@ userScheema.statics.findByToken = function(token, cb) {
   });
 }
 
-const User = mongoose.model('User', userScheema);
+const User = mongoose.model('User', userSchema);
 
 module.exports = { User }
