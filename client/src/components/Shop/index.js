@@ -3,6 +3,7 @@ import PageTop from '../../utils/page_top.js';
 import { connect } from 'react-redux';
 import CollapseCheckbox from '../../utils/collapseCheckbox';
 import CollapseRadio from '../../utils/collapseRadio';
+import LoadmoreCards from './loadmoreCards';
 import { getProductsToShop, getBrands, getWoods } from '../../actions/product_actions';
 import { frets, price } from '../../utils/fixed_categories';
 
@@ -61,6 +62,18 @@ class Shop extends Component {
       })
   }
 
+  loadmoreCards = () => {
+    let skip = this.state.skip + this.state.limit;
+
+    this.props.dispatch(getProductsToShop(
+      skip, this.state.limit, this.state.filters, this.props.products.toShop
+    )).then(() => {
+      this.setState({
+        skip
+      })
+    })
+  }
+
   render() {
     const products = this.props.products;
     return (
@@ -97,7 +110,20 @@ class Shop extends Component {
               />
             </div>
             <div className="right">
-              Rigth
+              <div className="shop_options">
+                <div className="shop_grids clear">
+                  grids
+                </div>
+              </div>
+              <div>
+                <LoadmoreCards
+                  grid={this.state.grid}
+                  limit={this.state.limit}
+                  size={products.toShopSize}
+                  products={products.toShop}
+                  loadmore={() => this.loadmoreCards()}
+                  />
+              </div>
             </div>
           </div>
         </div>
