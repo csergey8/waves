@@ -6,6 +6,8 @@ import CollapseRadio from '../../utils/collapseRadio';
 import LoadmoreCards from './loadmoreCards';
 import { getProductsToShop, getBrands, getWoods } from '../../actions/product_actions';
 import { frets, price } from '../../utils/fixed_categories';
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import { faBars, faTh } from '@fortawesome/fontawesome-free-solid'; 
 
 class Shop extends Component {
 
@@ -74,6 +76,12 @@ class Shop extends Component {
     })
   }
 
+  handleGrid = () => {
+    this.setState({
+      grid: !this.state.grid ? 'grid_bars' : ''
+    })
+  }
+
   render() {
     const products = this.props.products;
     return (
@@ -112,7 +120,18 @@ class Shop extends Component {
             <div className="right">
               <div className="shop_options">
                 <div className="shop_grids clear">
-                  grids
+                  <div
+                    className={`grid_btn ${this.state.grid ? '' : 'active'}`}
+                    onClick={() => this.handleGrid()}
+                  >
+                    <FontAwesomeIcon icon={faTh}/>
+                  </div>
+                  <div
+                    className={`grid_btn ${!this.state.grid ? '' : 'active'}`}
+                    onClick={() => this.handleGrid()}
+                  >
+                    <FontAwesomeIcon icon={faBars}/>
+                  </div>
                 </div>
               </div>
               <div>
