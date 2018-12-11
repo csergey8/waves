@@ -2,8 +2,9 @@ import React, { Component } from 'react';
 import PageTop from '../../utils/page_top.js';
 import { connect } from 'react-redux';
 import CollapseCheckbox from '../../utils/collapseCheckbox';
-import { getBrands, getWoods } from '../../actions/product_actions';
-import { frets } from '../../utils/fixed_categories';
+import CollapseRadio from '../../utils/collapseRadio';
+import { getProductsToShop, getBrands, getWoods } from '../../actions/product_actions';
+import { frets, price } from '../../utils/fixed_categories';
 
 class Shop extends Component {
 
@@ -22,15 +23,44 @@ class Shop extends Component {
   componentDidMount() {
     this.props.dispatch(getBrands());
     this.props.dispatch(getWoods());
+    this.props.dispatch(getProductsToShop(this.state.skip, this.state.limit, this.state.filters))
   }
   handleFilters = (filters, category) => {
     const newFilters = {...this.state.filters};
     newFilters[category] = filters;
 
+    if(category === "price") {
+      let priceValues = this.handlePrice(filters);
+      newFilters[category] = priceValues;
+    }
+    this.showFilteredResults(newFilters);
+
     this.setState({
       filters: newFilters
     })
   }
+
+  handlePrice = (value) => {
+    const data = price;
+    let array = [];
+
+    for(let key in data) {
+      if(data[key]._id === parseInt(value, 10)) {
+        array = data[key].array
+      }
+    }
+    return array;
+  }
+
+  showFilteredResults = (filters) => {
+    this.props.dispatch(getProductsToShop(0, this.state.limit, filters))
+      .then(() => {
+        this.setState({
+          skip: 0
+        })
+      })
+  }
+
   render() {
     const products = this.props.products;
     return (
@@ -58,6 +88,12 @@ class Shop extends Component {
                 title="Woods"
                 list={products.woods}
                 handleFilters={(filters) => this.handleFilters(filters, 'woods')}
+              />
+              <CollapseRadio 
+                initState={true}
+                title="Price"
+                list={price}
+                handleFilters={(filters) => this.handleFilters(filters, 'price')}
               />
             </div>
             <div className="right">
