@@ -4,7 +4,7 @@ import MyButton from '../../utils/Button';
 
 const UserDashboard = ({ user }) => {
   return (
-    <UserLayout>
+    <UserLayout user={user}>
       <div>
         <div className="user_nfo_panel">
           <h1>User information</h1>
