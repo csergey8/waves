@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import UserLayout from '../../../hoc/UserLayout';
 import FormField from '../../../utils/FormField';
 import { update, generateData, isFormValid, populateOptionFields, resetFields } from '../../../utils/FormActions';
+import FileUpload from '../../../utils/FileUpload';
 
 import { connect } from 'react-redux';
 import { getBrands, getWoods, addProduct, clearProduct } from '../../../actions/product_actions';
@@ -175,6 +176,16 @@ class AddProduct extends Component {
       touched: false,
       validationMsg: '',
       showlabel: true
+    },
+    images: {
+      value: [],
+      validaion: {
+        required: false
+      },
+      valid: true,
+      touched: false,
+      validationMsg: '',
+      showlabel: false
     }
     
   }
@@ -232,6 +243,15 @@ updateFields = (newFormData) => {
   })
 }
 
+imagesHandler = (images) => {
+  const newFormData = {...this.state.formData}
+  newFormData['images'].value = images;
+  newFormData['images'].valid = true;
+  this.setState({
+    formData: newFormData
+  })
+}
+
 
 componentDidMount() {
   const formData = this.state.formData;
@@ -251,7 +271,10 @@ componentDidMount() {
         <div>
           <h1>Add product</h1>
           <form onSubmit={(e) => this.submitForm(e)}>
-
+          <FileUpload 
+            imagesHandler={(images) => this.imagesHandler(images)} 
+            reset={this.state.formSuccess}
+          />
           <FormField id={'name'} formData={this.state.formData.name} change={(element) => this.updateForm(element)} />
           <FormField id={'description'} formData={this.state.formData.description} change={(element) => this.updateForm(element)} />
           <FormField id={'price'} formData={this.state.formData.price} change={(element) => this.updateForm(element)} />
