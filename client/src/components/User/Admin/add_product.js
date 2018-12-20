@@ -224,9 +224,6 @@ submitForm = (e) => {
       formError: true
     })
   }
-
-
-
 }
 
 updateForm = (element) => {

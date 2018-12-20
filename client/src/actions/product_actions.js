@@ -1,6 +1,15 @@
 import axios from 'axios';
 
-import { GET_PRODUCTS_BY_SELL, GET_PRODUCTS_BY_ARRIVAL, GET_BRANDS, GET_WOODS, GET_PRODUCTS_TO_SHOP, ADD_PRODUCT, CLEAR_PRODUCT } from './types';
+import { GET_PRODUCTS_BY_SELL, 
+         GET_PRODUCTS_BY_ARRIVAL,
+         GET_BRANDS, 
+         GET_WOODS, 
+         GET_PRODUCTS_TO_SHOP, 
+         ADD_PRODUCT, 
+         CLEAR_PRODUCT,
+         ADD_BRAND,
+         ADD_WOOD
+         } from './types';
 
 import { PRODUCT_SERVER } from '../utils/misc';
 
@@ -27,13 +36,9 @@ export function getProductsByArrival() {
 
 export function getBrands() {
   const request = axios.get(`${PRODUCT_SERVER}/brands`)
-    .then(res => 
-      
-      {
-        console.log(res.data)
+    .then(res => {
       return res.data
     })
-    
 
   return {
     type: GET_BRANDS,
@@ -86,6 +91,36 @@ export function addProduct(dataToSubmit) {
       type: ADD_PRODUCT,
       payload: request
     }
+}
+
+export function addBrand(dataToSubmit, existingsBrands) {
+  const request = axios.post(`${PRODUCT_SERVER}/brand`, dataToSubmit)
+      .then(res => {
+        let brands = [...existingsBrands, res.data.brand];
+        return {
+          success: res.data.success,
+          brands
+        }
+      })
+  return {
+    type: ADD_BRAND,
+    payload: request
+  }
+}
+
+export function addWood(dataToSubmit, existingsWoods) {
+  const request = axios.post(`${PRODUCT_SERVER}/wood`, dataToSubmit)
+    .then(res => {
+      let woods = [...existingsWoods, res.data.wood];
+      return {
+        success: res.data.success,
+        woods
+      }
+    })
+  return {
+    type: ADD_WOOD,
+    payload: request
+  }
 }
 
 export function clearProduct() {
