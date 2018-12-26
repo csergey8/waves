@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-import { GET_PRODUCTS_BY_SELL, 
+import { 
+          GET_PRODUCTS_BY_SELL, 
          GET_PRODUCTS_BY_ARRIVAL,
          GET_BRANDS, 
          GET_WOODS, 
@@ -8,7 +9,9 @@ import { GET_PRODUCTS_BY_SELL,
          ADD_PRODUCT, 
          CLEAR_PRODUCT,
          ADD_BRAND,
-         ADD_WOOD
+         ADD_WOOD,
+         GET_PRODUCT_DETAIL,
+         CLEAR_PRODUCT_DETAIL
          } from './types';
 
 import { PRODUCT_SERVER } from '../utils/misc';
@@ -127,5 +130,25 @@ export function clearProduct() {
   return {
     type: CLEAR_PRODUCT,
     payload: ''
+  }
+}
+
+export function getProductDetail(id) {
+  const request = axios.get(`${PRODUCT_SERVER}/articles_by_id?id=${id}&type=single`)
+    .then(res => {
+      return res.data
+    })
+
+  
+    return {
+      type: GET_PRODUCT_DETAIL,
+      payload: request
+    }
+}
+
+export function clearProductDetail() {
+  return {
+    type: CLEAR_PRODUCT_DETAIL,
+    payload: []
   }
 }
