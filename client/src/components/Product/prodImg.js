@@ -1,29 +1,41 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
+import ImageLightbox from '../../utils/lightbox';
 
 class ProdImg extends Component {
   state = {
-    lightBox: false,
+    lightbox: false,
     imagePos: 0,
-    lightBoxImages: []
+    lightboxImages: []
   }
 
   componentDidMount() {
     if(this.props.detail[0].images.length > 0) {
-      let lightBoxImages = []
+      let lightboxImages = []
 
       this.props.detail[0].images.forEach(item => {
-        lightBoxImages.push(item.url)
+        lightboxImages.push(item.url)
       })
       this.setState({
-        lightBoxImages
+        lightboxImages
       })
     } else {
 
     }
   }
 
-  handleLightBox = () => {
+  handleLightbox = (pos) => {
+    if(this.state.lightboxImages.length > 0) {
+      this.setState({
+        lightbox: true,
+        imagePos: pos
+      })
+    }
+  }
 
+  handleLightboxClose = () => {
+    this.setState({
+      lightbox: false
+    })
   }
 
   renderCardImage = (images) => {
@@ -35,12 +47,12 @@ class ProdImg extends Component {
   }
 
   showThumbs = () => (
-    this.state.lightBoxImages.map((item, i) => (
+    this.state.lightboxImages.map((item, i) => (
       i > 0 ?
 
       <div 
       key={i}
-      onClick={() => this.handleLightBox(i)}
+      onClick={() => this.handleLightbox(i)}
       className="thumb"
       style={{
         background: `url(${item}) no-repeat`
@@ -60,7 +72,7 @@ class ProdImg extends Component {
         <div className="main_pic">
           <div
             style={{background: `url(${this.renderCardImage(detail.images)}) no-repeat`}}
-            onClick={() => this.handleLightBox(0)}
+            onClick={() => this.handleLightbox(0)}
           >
           
           </div>
@@ -68,6 +80,19 @@ class ProdImg extends Component {
         <div className="main_thumbs">
           {this.showThumbs(detail)}
         </div>
+        {
+          this.state.lightbox ?
+
+          <ImageLightbox
+            id={detail.id}
+            images={this.state.lightboxImages}
+            open={this.state.open}
+            pos={this.state.imagePos}
+            onclose={() => this.handleLightboxClose()}
+          />
+
+          : null
+        }
       </div>
     )
   }
