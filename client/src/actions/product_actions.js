@@ -149,6 +149,6 @@ export function getProductDetail(id) {
 export function clearProductDetail() {
   return {
     type: CLEAR_PRODUCT_DETAIL,
-    payload: []
+    payload: null
   }
 }
