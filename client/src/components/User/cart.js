@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import UserLayout from '../../hoc/UserLayout';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import { faFrown, faSmile } from '@fortawesome/fontawesome-free-solid';
-import { getCartItems } from '../../actions/user_actions';
+import { getCartItems, removeCartItem } from '../../actions/user_actions';
 import UserProductBlock from '../../utils/user/productBlock';
 
 class UserCart extends Component {
@@ -46,7 +46,20 @@ class UserCart extends Component {
   }
 
   removeFromCart = (id) => {
-
+    this.props.dispatch(removeCartItem(id))
+      .then(() => {
+        if(this.props.user.cartDetail.length <= 0) {
+          this.setState({
+            showTotal: false
+          })
+        } else {
+          const total = this.calculateTotal(this.props.user.cartDetail);
+          this.setState({
+            total,
+            showTotal: true
+          })
+        }
+      })
   }
 
   showNoItemMessage = () => (
