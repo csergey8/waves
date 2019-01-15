@@ -4,6 +4,7 @@ const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
 const formidable = require('express-formidable');
 const cloudinary = require('cloudinary');
+const async = require('async');
 require('dotenv').config();
 
 const app = express();
@@ -25,6 +26,7 @@ const { User } = require('./models/user');
 const { Brand } = require('./models/brand');
 const { Wood } = require('./models/wood');
 const { Product } = require('./models/product');
+const { Payment } = require('./models/payment');
 
 // Middleware 
 const { auth } = require('./middleware/auth');
@@ -301,6 +303,79 @@ app.get('/api/users/remove_from_cart', auth, (req, res) => {
 
       }
      )
+});
+
+
+app.post('/api/users/success_buy', auth, (req, res) => {
+  let history = [];
+  let transactionData = {};
+
+  req.body.cartDetail.forEach(i => {
+    history.push({
+      dateOfPurchase: Date.now(),
+      name: i.name,
+      brand: i.brand.name,
+      id: i._id,
+      price: i.price,
+      quantity: i.quantity,
+      paymentId: req.body.paymentData.paymentId 
+    })
+  })
+
+  transactionData.user = {
+    id: req.user._id,
+    name: req.user.name,
+    lastname: req.user.lastname,
+    email: req.user.email
+  }
+  transactionData.data = req.body.paymentData;
+  transactionData.products = history;
+
+  User.findByIdAndUpdate(
+    {_id: req.user._id},
+    { $push: { history: history}, $set: {cart: []} },
+    { new: true},
+    (err, user) => {
+      if(err) res.json({ success: false, err});
+      
+      const payment = new Payment(transactionData);
+      payment.save((err, doc) => {
+        if(err) res.json({ success: false, err});
+
+        let products = []
+        doc.products.forEach(i => {
+          products.push({
+            id: i.id,
+            quantity: i.quantity
+          })
+        })
+
+        async.eachOfSeries(products, (item, callback) => {
+          Product.update(
+            { _id: item.id},
+            { $inc: {
+              "sold": item.quantity
+            }},
+            {new: false},
+            callback
+            )
+        }, (err) => {
+          if(err) return res.json({ success: false, err});
+          res.status(200).json({
+            success: true,
+            cart: user.cart,
+            cartDetail: []
+          })
+
+        })
+      })
+    }
+  )
+
+
+
+
+
 })
 
 
