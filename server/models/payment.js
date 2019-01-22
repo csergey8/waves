@@ -1,22 +1,20 @@
 const mongoose = require('mongoose');
 
-const paymentScheema = mongoose.Schema({
-  user: {
-    type: Array,
-    default: []
-  },
-  data: {
-    type: Array,
-    default: []
-  },
-  product: {
-    type: Array,
-    default: []
-  }
+const paymentSchema = mongoose.Schema({
+    user:{
+        type:Array,
+        default:[]
+    },
+    data:{
+        type:Array,
+        default:[]
+    },
+    product:{
+        type:Array,
+        default:[]
+    }
+})
 
-});
+const Payment = mongoose.model('Payment',paymentSchema);
 
-const Payment = mongoose.model('Payment', paymentScheema);
-
-
-module.export = { Payment }
+module.exports = { Payment }
