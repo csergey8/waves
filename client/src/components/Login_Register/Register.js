@@ -166,9 +166,11 @@ class Register extends Component {
                     <FormField id={'confirmPassword'} formData={this.state.formData.confirmPassword} change={(element) => this.updateForm(element)} />
                   </div>
                 </div>
-                {this.state.formError ? <div className="error_label">Please check your data</div> : null}
+                <div>
+                  {this.state.formError ? <div className="error_label">Please check your data</div> : null}
 
-                <button onClick={(e) => this.submitForm(e)}>Create an account</button>
+                  <button onClick={(e) => this.submitForm(e)}>Create an account</button>
+                </div>
               </form>
             </div>
           </div>
