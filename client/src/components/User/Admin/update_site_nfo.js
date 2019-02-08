@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { update, generateData, isFormValid, populateField } from '../../../utils/FormActions';
+import { update, generateData, isFormValid, populateField, populateFields } from '../../../utils/FormActions';
 import FormField from '../../../utils/FormField';
 import { connect } from 'react-redux';
-
+import { getSiteData, updateSiteData } from '../../../actions/site_actions';
 class UpdateSiteNfo extends Component {
 
   state = {
@@ -96,7 +96,18 @@ class UpdateSiteNfo extends Component {
     let formIsValid = isFormValid(this.state.formData, 'site_info');
 
     if(formIsValid) {
-      console.log(dataToSubmit);  
+      this.props.dispatch(updateSiteData(dataToSubmit))
+          .then(() => {
+            this.setState({
+              formSuccess: true
+            }, () => {
+              setTimeout(() => {
+                this.setState({
+                  formSuccess: false
+                })
+              }, 1500)
+            })
+          })
     } else {
       this.setState({
         formError: true
@@ -106,6 +117,17 @@ class UpdateSiteNfo extends Component {
     console.log(dataToSubmit);
 
 
+  }
+
+  componentDidMount() {
+    this.props.dispatch(getSiteData())
+      .then(() => {
+        console.log(this.props.site.siteData[0])
+        const newFormData = populateFields(this.state.formData, this.props.site.siteData[0]);
+        this.setState({
+          formData: newFormData
+        })
+      })
   }
 
 
@@ -137,3 +159,4 @@ const mapStateToProps = (state) => {
 }
 
 export default connect(mapStateToProps)(UpdateSiteNfo);
+

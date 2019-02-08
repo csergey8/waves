@@ -3,8 +3,10 @@ import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import { faCompass, faPhone, faClock, faEnvelope } from '@fortawesome/fontawesome-free-solid';
 
 
-const Footer = () => {
+const Footer = ({ data }) => {
+  console.log(data);
   return (
+     data.siteData ? 
     <footer className="bck_b_dark">
       <div className="container">
         <div className="logo">
@@ -21,7 +23,7 @@ const Footer = () => {
                 />
                 <div className="nfo">
                   <div>Adress</div>
-                  <div>Kramer 3231</div>
+                  <div>{data.siteData[0].address}</div>
                 </div>
               </div>
               <div className="tag">
@@ -31,7 +33,7 @@ const Footer = () => {
                 />
                 <div className="nfo">
                   <div>Phone</div>
-                  <div>+1 854 22 33</div>
+                  <div>{data.siteData[0].phone}</div>
                 </div>
               </div>
               <div className="tag">
@@ -41,7 +43,7 @@ const Footer = () => {
                 />
                 <div className="nfo">
                   <div>Working Hours</div>
-                  <div>+1 854 22 33</div>
+                  <div>{data.siteData[0].hours}</div>
                 </div>
               </div>
               <div className="tag">
@@ -51,7 +53,7 @@ const Footer = () => {
                 />
                 <div className="nfo">
                   <div>Email</div>
-                  <div>info@waves.com</div>
+                  <div>{data.siteData[0].email}</div>
                 </div>
               </div>
             </div>
@@ -63,7 +65,9 @@ const Footer = () => {
         </div>
       </div>
     </footer>
-  )
+
+   : null
+  );
 }
 
 export default Footer;
