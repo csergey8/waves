@@ -11,7 +11,7 @@ const app = express();
 
 // Mongoose setup
 mongoose.Promise = global.Promise;
-mongoose.connect(process.env.DATABASE);
+mongoose.connect(process.env.MONGODB_URI);
 
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
