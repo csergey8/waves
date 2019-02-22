@@ -5,6 +5,8 @@ const mongoose = require('mongoose');
 const formidable = require('express-formidable');
 const cloudinary = require('cloudinary');
 const async = require('async');
+const mailer = require('nodemailer');
+
 require('dotenv').config();
 
 const app = express();
@@ -17,9 +19,7 @@ cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
   api_key: process.env.CLOUD_API_KEY,
   api_secret: process.env.CLOUD_API_SECRET
-})
-
-
+});
 
 // Models
 const { User } = require('./models/user');
@@ -38,6 +38,34 @@ app.use(cookieParser());
 
 app.use(express.static('client/build'));
 
+
+// NodeMailer
+const { sendEmail } = require('./utils/mail');
+
+// const smtpTransport = mailer.createTransport({
+//   service: "Gmail",
+//   auth: {
+//     user: process.env.EMAIL,
+//     pass: process.env.EMAIL_PASSWORD
+//   }
+// });
+
+// const mail = {
+//   from: "Waves",
+//   to: "s.chornyi8@gmail.com",
+//   subject: "Send test email",
+//   text: "Testing our mail",
+//   html: "<bold>Hello</bold>"
+// }
+
+// smtpTransport.sendMail(mail, (err,  res) => {
+//   if(err) {
+//     console.log(err)
+//   } else {
+//     console.log('Email send');
+//   }
+//   smtpTransport.close();
+// })
 
 //
 // WOODS
@@ -173,6 +201,7 @@ app.post('/api/users/register', (req, res) => {
   const user = new User(req.body);
   user.save((err, doc) => {
     if(err) return res.json({ success: false, err})
+    sendEmail(doc.email, doc.name, null, 'welcome');
     res.status(200).json({ success: true })
   })
 })
