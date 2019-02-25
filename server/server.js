@@ -6,6 +6,7 @@ const formidable = require('express-formidable');
 const cloudinary = require('cloudinary');
 const async = require('async');
 const mailer = require('nodemailer');
+const SHA1 = require('crypto-js/sha1');
 
 require('dotenv').config();
 
@@ -38,38 +39,12 @@ app.use(cookieParser());
 
 app.use(express.static('client/build'));
 
-
 // NodeMailer
 const { sendEmail } = require('./utils/mail');
 
-// const smtpTransport = mailer.createTransport({
-//   service: "Gmail",
-//   auth: {
-//     user: process.env.EMAIL,
-//     pass: process.env.EMAIL_PASSWORD
-//   }
-// });
 
-// const mail = {
-//   from: "Waves",
-//   to: "s.chornyi8@gmail.com",
-//   subject: "Send test email",
-//   text: "Testing our mail",
-//   html: "<bold>Hello</bold>"
-// }
 
-// smtpTransport.sendMail(mail, (err,  res) => {
-//   if(err) {
-//     console.log(err)
-//   } else {
-//     console.log('Email send');
-//   }
-//   smtpTransport.close();
-// })
 
-//
-// WOODS
-//
 
 app.post('/api/product/wood', auth, admin, (req, res) => {
   const wood = new Wood(req.body);
@@ -342,10 +317,14 @@ app.get('/api/users/remove_from_cart', auth, (req, res) => {
 app.post('/api/users/success_buy', auth, (req, res) => {
   let history = [];
     let transactionData = {}
+    const date = new Date();
+    const po = `PO-${date.getSeconds()}${date.getMilliseconds()}-${SHA1(req.user._id).toString().substring(0,8)}`;
+
 
     // user history
     req.body.cartDetail.forEach((item)=>{
         history.push({
+            porder: po,
             dateOfPurchase: Date.now(),
             name: item.name,
             brand: item.brand.name,
@@ -363,7 +342,10 @@ app.post('/api/users/success_buy', auth, (req, res) => {
         lastname: req.user.lastname,
         email: req.user.email
     }
-    transactionData.data = req.body.paymentData;
+    transactionData.data = {
+      ...req.body.paymentData,
+      porder: po
+    };
     transactionData.product = history;
         
     User.findOneAndUpdate(
@@ -391,7 +373,9 @@ app.post('/api/users/success_buy', auth, (req, res) => {
                         callback
                     )
                 },(err)=>{
-                    if(err) return res.json({success:false,err})
+                    if(err) return res.json({success:false,err});
+                    console.log(user.name);
+                    sendEmail(user.email, user.name, null, "purchase", transactionData); 
                     res.status(200).json({
                         success:true,
                         cart: user.cart,
