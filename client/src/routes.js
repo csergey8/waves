@@ -15,6 +15,8 @@ import UpdateProfile from './components/User/UpdateProfile';
 import ManageSite from './components/User/Admin/manage_site';
 import PageNotFound from './utils/page_not_found';
 import AddFile from './components/User/Admin/add_file';
+import ResetUser from './components/Reset_user';
+import ResetPassword from './components/Reset_user/reset_password';
 
 
 const Routes = () => {
@@ -28,7 +30,9 @@ const Routes = () => {
         <Route path="/user/dashboard" exact component={Auth(UserDashboard, true)} />
         <Route path="/user/cart" exact component={Auth(UserCart, true)} />
         <Route path="/user/user_profile" exact component={Auth(UpdateProfile, true)} />
-        <Route path="/product_detail/:id" exact component={Auth(ProductPage, null)} />
+        <Route path="/reset_password/:id" exact component={Auth(ResetPassword, null)} />
+        <Route path="/reset_user" exact component={Auth(ResetUser, null)} />
+        <Route path="/product_detail/:token" exact component={Auth(ProductPage, null)} />
         <Route path="/register" exact component={Auth(Register, false)} />
         <Route path="/login_register" exact component={Auth(LoginRegister, false)} />
         <Route path="/shop" exact component={Auth(Shop, null)} />

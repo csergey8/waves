@@ -9,6 +9,7 @@ const mailer = require('nodemailer');
 const SHA1 = require('crypto-js/sha1');
 const fs = require('fs');
 const path = require('path');
+const moment = require('moment');
 
 
 
@@ -58,6 +59,8 @@ let storage = multer.diskStorage({
 });
 
 const upload = multer({storage}).single('file');
+
+
 
 app.post('/api/users/uploadfile', auth, admin,(req, res) => {
   upload(req, res, (err) => {
@@ -175,6 +178,43 @@ app.get('/api/product/brands', (req, res) => {
 //
 // USERS
 //
+
+app.post('/api/users/reset_users', (req, res) => {
+  User.findOne(
+    {'email': req.body.email},
+    (err, user) => {
+      console.log(err);
+      user.generateResetToken((err, user) => {
+        if(err) return res.json({success: false, err});
+        sendEmail(user.email, user.name, null, "reset_password", user)
+        return res.json({success: true})
+      })
+    }
+    )
+})
+
+app.post('/api/users/reset_password', (req, res) => {
+  var today = moment().startOf('day').valueOf();
+  console.log(today + "------" + req.body.resetToken)
+  User.findOne({
+    resetToken: req.body.resetToken,
+    resetTokenExp: {
+      $gte: today
+    }
+  }, (err, user) => {
+    if(!user) return res.json({success: false, msg: 'Sorry token bad'})
+
+    user.password = req.body.password;
+    user.resetToken = '';
+    user.resetTokenExp = '';
+
+    user.save((err, doc) => {
+      if(err) return res.json({success: false, msg: 'Sorry token bad'})
+      return res.status(200).json({success: true})
+    })
+  }
+    )
+})
 
 app.get('/api/users/auth', auth, (req, res) => {
 

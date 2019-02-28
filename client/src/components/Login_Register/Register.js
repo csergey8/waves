@@ -124,10 +124,6 @@ class Register extends Component {
         formError: true
       })
     }
-
-    console.log(dataToSubmit);
-
-
   }
 
   updateForm = (element) => {

@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux';
 import FormField from '../../utils/FormField';
 import { withRouter } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import { update, generateData, isFormValid } from '../../utils/FormActions';
 import { loginUser } from '../../actions/user_actions';
@@ -91,9 +92,11 @@ class Login extends Component {
           {this.state.formError ? <div className="error_label">Please check your data</div> : null}
 
           <button onClick={(e) => this.submitForm(e)}>Log in</button>
+          <Link to="/reset_user" style={{ float: 'right' }}><button>Forgot password?</button></Link>
 
 
         </form>
+        
       </div>
     )
   }
