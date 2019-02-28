@@ -7,6 +7,10 @@ const cloudinary = require('cloudinary');
 const async = require('async');
 const mailer = require('nodemailer');
 const SHA1 = require('crypto-js/sha1');
+const fs = require('fs');
+const path = require('path');
+
+
 
 require('dotenv').config();
 
@@ -42,10 +46,42 @@ app.use(express.static('client/build'));
 // NodeMailer
 const { sendEmail } = require('./utils/mail');
 
+// Multer (upload files)
+const multer = require('multer');
+let storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/')
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}_${file.originalname}`)
+  } 
+});
+
+const upload = multer({storage}).single('file');
+
+app.post('/api/users/uploadfile', auth, admin,(req, res) => {
+  upload(req, res, (err) => {
+    if(err) return res.json({ success: false, err})
+    return res.json({ success: true})
+  })
+})
+
+app.get('/api/users/admin_files', auth, admin, (req, res) => {
+  const dir = path.resolve(".") + '/uploads';
+  fs.readdir(dir, (err, items) => {
+    res.status(200).send(items);
+  })
+})
+
+app.get('/api/users/download/:id', auth, admin, (req, res) => {
+  const file = path.resolve(".") + `/uploads/${req.params.id}`;
+  res.download(file)
+})
 
 
 
 
+/// WOODS
 app.post('/api/product/wood', auth, admin, (req, res) => {
   const wood = new Wood(req.body);
 
@@ -423,6 +459,10 @@ app.post('/api/site/site_data',auth, admin, (req, res) => {
     }
     )
 })
+
+// FILE UPLOAD
+
+app.post('/')
 
 
 // DEFAULT 
