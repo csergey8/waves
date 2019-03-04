@@ -18,7 +18,7 @@ class AddFile extends Component {
     }
   }
 
-  componentDidMount() {
+  getFilesLists = () => {
     axios.get('/api/users/admin_files')
     .then(res => {
       this.setState({
@@ -26,8 +26,10 @@ class AddFile extends Component {
       })
       console.log(this.state.files)
     })
-    
-   
+  }
+
+  componentDidMount() {
+    this.getFilesLists();
   }
 
   onDrop(files) {
@@ -44,6 +46,7 @@ class AddFile extends Component {
       .then(res => {
         this.forceUpdate();
         if(res.data.success){
+          this.getFilesLists();
           this.setState({
             uploading: false,
             formSuccess: true,
